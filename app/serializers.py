@@ -16,6 +16,10 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name' , read_only=True)
+    last_name = serializers.CharField(
+        source='user.last_name', read_only=True)
+
     class Meta:
         model = UserProfile
         fields = '__all__'

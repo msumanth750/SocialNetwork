@@ -2,7 +2,6 @@ from .models import UserProfile, UserRequest
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -78,8 +77,8 @@ def authenticated_api(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def search_users(request, keyword):
-    users_by_email = User.objects.filter(email__icontains=keyword)
-    users_by_name = User.objects.filter(username__icontains=keyword)
+    users_by_email = User.objects.filter(email__exact=keyword)
+    users_by_name = User.objects.filter(first_name__icontains=keyword)
 
     results = UserProfile.objects.filter(
         user__in=users_by_email | users_by_name)[:10]
@@ -88,7 +87,6 @@ def search_users(request, keyword):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_friend_request(request, friend_id):
